@@ -1,23 +1,43 @@
 package com.example.thebakepot;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.thebakepot.databinding.ActivityDetailedOrderBinding;
 
 public class DetailActivity extends AppCompatActivity {
     ActivityDetailedOrderBinding binding;
+    Integer quantity;
+    ImageView add,sub;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailedOrderBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         binding.insertBtn.setText("Order now");
-        Integer quantity=Integer.parseInt(binding.quantity.getText().toString());
+        quantity=Integer.parseInt(binding.quantity.getText().toString());
+        add=findViewById(R.id.addition);
+        sub=findViewById(R.id.substration);
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                quantity++;
+                binding.quantity.setText(quantity.toString());
+            }
+        });
+        sub.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(quantity>1){quantity--;}
+                binding.quantity.setText(quantity.toString());
+            }
+        });
         final DBHelper helper = new DBHelper(this);
         if (getIntent().getIntExtra("type", 0) == 1) {
             int image = getIntent().getIntExtra("image", 0);
@@ -33,7 +53,7 @@ public class DetailActivity extends AppCompatActivity {
             binding.insertBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    boolean isInserted = helper.insertOrder(binding.nameBox.getText().toString(), binding.phoneBox.getText().toString(), price, Integer.parseInt(binding.quantity.getText().toString()), image, name, description);
+                    boolean isInserted = helper.insertOrder(binding.nameBox.getText().toString(), binding.phoneBox.getText().toString(), price,Integer.parseInt(binding.quantity.getText().toString()), image, name, description);
                     if (isInserted) {
                         Toast.makeText(DetailActivity.this, "Succesfully added", Toast.LENGTH_SHORT).show();
                     } else {
@@ -53,6 +73,7 @@ public class DetailActivity extends AppCompatActivity {
             binding.detailsDescription.setText(c.getString(6));
             binding.nameBox.setText(c.getString(1));
             binding.phoneBox.setText(c.getString(2));
+            binding.quantity.setText(c.getString(4));
             binding.insertBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
